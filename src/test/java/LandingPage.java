@@ -66,8 +66,10 @@ class LandingPage extends PageBase {
             if (timeEarliestText.matches(this.validTimeStringFormat) & timeLatestText.matches(this.validTimeStringFormat)) {
                 this.setSelection(this.selectTimeEarliestBy, timeEarliestText);
                 this.setSelection(this.selectTimeLatestBy, timeLatestText);
-                this.setSelection(this.selectDateTypeBy, dateTypeText);   
-                this.waitAndReturnElement(this.inputEventNameBy).sendKeys(eventName);
+                this.setSelection(this.selectDateTypeBy, dateTypeText);
+                WebElement inputEventName = this.waitAndReturnElement(this.inputEventNameBy);
+                inputEventName.clear();
+                inputEventName.sendKeys(eventName);
                 for (String weekDay : weekDays) {
                     this.selectWeekDay(this.weekDayMap.get(weekDay));
                 }

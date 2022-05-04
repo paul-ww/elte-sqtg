@@ -23,7 +23,7 @@ public class EventPageTest {
         ),
         "Tuesday", Map.of(
             "from", "1:00 PM",
-            "to", "17:00 PM"
+            "to", "5:00 PM"
         )
     );
     
@@ -47,6 +47,7 @@ public class EventPageTest {
         EventPage eventPage = landingPage.createEvent(this.sampleEventName, this.sampleDateType, this.sampleWeekDays, this.sampleTimeEarliest, this.sampleTimeLatest);
         eventPage.setCredentials(this.sampleUser, this.samplePassword);
         eventPage.selectDaysAndTimes(this.sampleAvailability);
+        Assert.assertEquals(Integer.valueOf(1), eventPage.getGroupSize());
     }
 
 

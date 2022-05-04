@@ -4,12 +4,15 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 class EventPage extends PageBase {
 
@@ -36,16 +39,22 @@ class EventPage extends PageBase {
 
     private Map<String, Map<String, WebElement>> buildDayTimeToDivMap() {
         Map<String, Map<String, WebElement>> dayTimeToDivMap = new HashMap<String, Map<String, WebElement>>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:m a");
-        List<WebElement> allDivs = this.waitAndReturnElement(userGridBy).findElements(By.xpath("//div//div[starts-with(@id, 'YouTime')]"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
+        WebElement userGrid = this.waitAndReturnElement(userGridBy);
+        List<WebElement> allDivs = userGrid.findElements(By.xpath("//div//div[starts-with(@id, 'YouTime')]"));
         for (WebElement div : allDivs) {
             String timestamp = div.getAttribute("data-time");
-            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(timestamp)), ZoneOffset.UTC);
-            String weekday = date.getDayOfWeek().toString();
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)), ZoneOffset.UTC);
+            String weekday = date.getDayOfWeek().toString().toLowerCase();
+            weekday = weekday.substring(0, 1).toUpperCase() + weekday.substring(1);
             String time = date.format(formatter);
-            dayTimeToDivMap.put(
-                weekday, Map.of(time, div)
-            );
+
+            Map<String, WebElement> innerMap = dayTimeToDivMap.get(weekday);
+            if (innerMap == null) {
+                dayTimeToDivMap.put(weekday, innerMap = new HashMap<String, WebElement>());
+            } else {
+                innerMap.put(time, div);
+            }
         }
         return dayTimeToDivMap;
     }
@@ -57,8 +66,9 @@ class EventPage extends PageBase {
     }
 
     private void makeSelection(WebElement[] divsToSelectBetween) {
-        WebElement divStart = divsToSelectBetween[0];
-        WebElement divEnd = divsToSelectBetween[1];
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebElement divStart = wait.until(ExpectedConditions.visibilityOf(divsToSelectBetween[0]));
+        WebElement divEnd = wait.until(ExpectedConditions.visibilityOf(divsToSelectBetween[1]));
         Actions act = new Actions(this.driver);
         act.dragAndDrop(divStart, divEnd).build().perform();
     }
@@ -78,16 +88,16 @@ class EventPage extends PageBase {
         return this.waitAndReturnElement(this.divEventNameBy).getText();
     }
 
-    public String getMinAvailability() {
-        return this.waitAndReturnElement(this.divMinAvailableBy).getText().split("/")[0];
+    public Integer getMinAvailability() {
+        return Integer.parseInt(this.waitAndReturnElement(this.divMinAvailableBy).getText().split("/")[0]);
     }
 
-    public String getMaxAvailability() {
-        return this.waitAndReturnElement(this.divMaxAvailableBy).getText().split("/")[0];
+    public Integer getMaxAvailability() {
+        return Integer.parseInt(this.waitAndReturnElement(this.divMaxAvailableBy).getText().split("/")[0]);
     }
 
-    public String getGroupSize() {
-        return this.waitAndReturnElement(this.divMaxAvailableBy).getText().split("/")[1];
+    public Integer getGroupSize() {
+        return Integer.parseInt(this.waitAndReturnElement(this.divMaxAvailableBy).getText().split("/")[1]);
     }
 
 
