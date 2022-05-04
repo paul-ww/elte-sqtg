@@ -28,5 +28,9 @@ class PageBase {
     public String getPageTitle() {
         return this.driver.getTitle();
     }
+
+    public String getUrl() {
+        return this.driver.getCurrentUrl();
+    }
    
 }
