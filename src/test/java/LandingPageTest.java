@@ -40,11 +40,7 @@ public class LandingPageTest {
     public void testCreateEvent() {
         LandingPage landingPage = new LandingPage(this.driver);
         EventPage myEventPage = landingPage.createEvent(this.sampleEventName, this.sampleDateType, this.sampleWeekDays, this.sampleTimeEarliest, this.sampleTimeLatest);
-               
-        // SearchResultPage searchResultPage = mainPage.search("Students");
-        // String bodyText = searchResultPage.getBodyText();
-        // Assert.assertTrue(bodyText.contains("found"));
-        // Assert.assertTrue(bodyText.contains("For Students"));
+        Assert.assertEquals(this.sampleEventName, myEventPage.getEventName());
     }
     
 

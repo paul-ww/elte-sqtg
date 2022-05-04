@@ -22,11 +22,15 @@ class EventPage extends PageBase {
     private By buttonSubmitCredentialsBy = By.xpath("//input[@value='Sign In']");
     private By divMinAvailableBy = By.xpath("//div[@id='MinAvailable']");
     private By divMaxAvailableBy = By.xpath("//div[@id='MaxAvailable']");
-    private By groupGridBy = By.xpath("//div[@id='GroupGridSlots']");
     private By userGridBy = By.xpath("//div[@id='YouGridSlots']");
     
     public EventPage(WebDriver driver) {
         super(driver);
+    }
+
+    public EventPage(WebDriver driver, String url) {
+        super(driver);
+        this.driver.get(url);
     }
 
     private void setUsername(String username) {
@@ -73,7 +77,7 @@ class EventPage extends PageBase {
         act.dragAndDrop(divStart, divEnd).build().perform();
     }
 
-    public void selectDaysAndTimes(Map<String, Map<String, String>> availability) {
+    public void setAvailability(Map<String, Map<String, String>> availability) {
         Map<String, Map<String, WebElement>> dayTimeToDivMap = this.buildDayTimeToDivMap();
         availability.forEach((weekday, times) -> makeSelection(getStartEndElements(dayTimeToDivMap, weekday, times.get("from"), times.get("to"))));
     }
@@ -85,7 +89,7 @@ class EventPage extends PageBase {
     }
 
     public String getEventName() {
-        return this.waitAndReturnElement(this.divEventNameBy).getText();
+        return this.waitAndReturnElement(this.divEventNameBy).getText().split("\n")[0];
     }
 
     public Integer getMinAvailability() {
