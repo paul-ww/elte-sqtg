@@ -23,7 +23,7 @@ class EventPage extends PageBase {
     private By divMinAvailableBy = By.xpath("//div[@id='MinAvailable']");
     private By divMaxAvailableBy = By.xpath("//div[@id='MaxAvailable']");
     private By userGridBy = By.xpath("//div[@id='YouGridSlots']");
-    
+
     public EventPage(WebDriver driver) {
         super(driver);
     }
@@ -48,7 +48,8 @@ class EventPage extends PageBase {
         List<WebElement> allDivs = userGrid.findElements(By.xpath("//div//div[starts-with(@id, 'YouTime')]"));
         for (WebElement div : allDivs) {
             String timestamp = div.getAttribute("data-time");
-            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)), ZoneOffset.UTC);
+            LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(timestamp)),
+                    ZoneOffset.UTC);
             String weekday = date.getDayOfWeek().toString().toLowerCase();
             weekday = weekday.substring(0, 1).toUpperCase() + weekday.substring(1);
             String time = date.format(formatter);
@@ -63,10 +64,11 @@ class EventPage extends PageBase {
         return dayTimeToDivMap;
     }
 
-    private WebElement[] getStartEndElements(Map<String, Map<String, WebElement>> dayTimeToDivMap, String weekday, String timeEarliest, String timeLatest) {
+    private WebElement[] getStartEndElements(Map<String, Map<String, WebElement>> dayTimeToDivMap, String weekday,
+            String timeEarliest, String timeLatest) {
         WebElement divStart = dayTimeToDivMap.get(weekday).get(timeEarliest);
         WebElement divEnd = dayTimeToDivMap.get(weekday).get(timeLatest);
-        return new WebElement[] {divStart, divEnd};
+        return new WebElement[] { divStart, divEnd };
     }
 
     private void makeSelection(WebElement[] divsToSelectBetween) {
@@ -79,7 +81,8 @@ class EventPage extends PageBase {
 
     public void setAvailability(Map<String, Map<String, String>> availability) {
         Map<String, Map<String, WebElement>> dayTimeToDivMap = this.buildDayTimeToDivMap();
-        availability.forEach((weekday, times) -> makeSelection(getStartEndElements(dayTimeToDivMap, weekday, times.get("from"), times.get("to"))));
+        availability.forEach((weekday, times) -> makeSelection(
+                getStartEndElements(dayTimeToDivMap, weekday, times.get("from"), times.get("to"))));
     }
 
     public void setCredentials(String username, String password) {
@@ -103,6 +106,5 @@ class EventPage extends PageBase {
     public Integer getGroupSize() {
         return Integer.parseInt(this.waitAndReturnElement(this.divMaxAvailableBy).getText().split("/")[1]);
     }
-
 
 }

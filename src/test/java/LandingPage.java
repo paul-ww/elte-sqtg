@@ -4,18 +4,16 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.By;
 
-
 class LandingPage extends PageBase {
 
     private final Map<String, String> weekDayMap = Map.of(
-        "Sunday", "Day-6-1",
-        "Monday", "Day-6-2",
-        "Tuesday", "Day-6-3",
-        "Wednesday", "Day-6-4",
-        "Thursday", "Day-6-5",
-        "Friday", "Day-6-6",
-        "Saturday", "Day-6-7"
-    );
+            "Sunday", "Day-6-1",
+            "Monday", "Day-6-2",
+            "Tuesday", "Day-6-3",
+            "Wednesday", "Day-6-4",
+            "Thursday", "Day-6-5",
+            "Friday", "Day-6-6",
+            "Saturday", "Day-6-7");
     private By selectDateTypeBy = By.xpath("//select[@id='DateTypes']");
     private By selectTimeEarliestBy = By.xpath("//select[@name='NoEarlierThan']");
     private By selectTimeLatestBy = By.xpath("//select[@name='NoLaterThan']");
@@ -24,11 +22,11 @@ class LandingPage extends PageBase {
     private String validTimeStringFormat = "\\d{1,2}:\\d{2} [AP]M";
     private String expectedDaysOfTheWeek = "Days of the Week";
     private String expectedSpecificDates = "Specific Dates";
-    
+
     public LandingPage(WebDriver driver) {
         super(driver);
         this.driver.get("https://www.when2meet.com/");
-    }    
+    }
 
     private String getSelection(By selectorBy) {
         Select selector = new Select(this.waitAndReturnElement(selectorBy));
@@ -59,11 +57,13 @@ class LandingPage extends PageBase {
         weekDayElement.click();
     }
 
-    public void fillAllForms(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText, String timeLatestText) {
+    public void fillAllForms(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText,
+            String timeLatestText) {
         if (dateTypeText.equals(this.expectedSpecificDates)) {
             throw new UnsupportedOperationException("Specific dates are not yet implemented.");
         } else if (dateTypeText.equals(this.expectedDaysOfTheWeek)) {
-            if (timeEarliestText.matches(this.validTimeStringFormat) & timeLatestText.matches(this.validTimeStringFormat)) {
+            if (timeEarliestText.matches(this.validTimeStringFormat)
+                    & timeLatestText.matches(this.validTimeStringFormat)) {
                 this.setSelection(this.selectTimeEarliestBy, timeEarliestText);
                 this.setSelection(this.selectTimeLatestBy, timeLatestText);
                 this.setSelection(this.selectDateTypeBy, dateTypeText);
@@ -76,11 +76,12 @@ class LandingPage extends PageBase {
             } else {
                 throw new IllegalArgumentException("Invalid time format entered, use e.g. 12:00 AM");
             }
-            
+
         }
     }
 
-    public EventPage createEvent(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText, String timeLatestText) {
+    public EventPage createEvent(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText,
+            String timeLatestText) {
         this.fillAllForms(eventName, dateTypeText, weekDays, timeEarliestText, timeLatestText);
         this.waitAndReturnElement(this.buttonCreateEventBy).click();
         return new EventPage(this.driver);
