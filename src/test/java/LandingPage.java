@@ -36,13 +36,15 @@ class LandingPage extends PageBase {
     }
 
     public String getSelectedTimeEarliest() {
-        Select selector = new Select(this.waitAndReturnElement(this.selectTimeEarliestBy));
-        return selector.getFirstSelectedOption().getText();
+        return this.getSelection(this.selectTimeEarliestBy);
     }
 
     public String getSelectedTimeLatest() {
-        Select selector = new Select(this.waitAndReturnElement(this.selectTimeLatestBy));
-        return selector.getFirstSelectedOption().getText();
+        return this.getSelection(this.selectTimeLatestBy);
+    }
+
+    public String getSelectedDateType() {
+        return this.getSelection(this.selectDateTypeBy);
     }
 
     private void setSelection(By selectorBy, String visibleText) {
@@ -57,7 +59,7 @@ class LandingPage extends PageBase {
         weekDayElement.click();
     }
 
-    public EventPage createEvent(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText, String timeLatestText) {
+    public void fillAllForms(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText, String timeLatestText) {
         if (dateTypeText.equals(this.expectedSpecificDates)) {
             throw new UnsupportedOperationException("Specific dates are not yet implemented.");
         } else if (dateTypeText.equals(this.expectedDaysOfTheWeek)) {
@@ -74,6 +76,10 @@ class LandingPage extends PageBase {
             }
             
         }
+    }
+
+    public EventPage createEvent(String eventName, String dateTypeText, String[] weekDays, String timeEarliestText, String timeLatestText) {
+        this.fillAllForms(eventName, dateTypeText, weekDays, timeEarliestText, timeLatestText);
         this.waitAndReturnElement(this.buttonCreateEventBy).click();
         return new EventPage(this.driver);
     }
